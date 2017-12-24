@@ -11,14 +11,14 @@
 #include <iostream>
 #include <vector>
 
-class Attribute { //属性
+class Attribute { //西瓜属性
 public:
     std::string name;
     int index; //original attribute index
     int possible_values;
 };
 
-class Watermelon {
+class Watermelon { //西瓜
 public:
     std::vector<int> attribute_values; //西瓜的属性值
     int label; //good watermelon = 1; bad watermelon = 0

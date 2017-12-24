@@ -1,6 +1,6 @@
 //
 //  main.cpp
-//  CreateDecisionTree
+//  DecisionTree
 //
 //  Created by panghu on 2017/8/7.
 //  Copyright © 2017年 panghu. All rights reserved.
@@ -16,7 +16,7 @@
 
 using namespace std;
 
-//读西瓜数据
+//Read Watermelon training data
 void ReadWatermelonData(std::string filename, std::vector<Watermelon> *Watermelons) {
     std::string line;
     std::string attribute;
@@ -104,6 +104,7 @@ void ReadWatermelonData(std::string filename, std::vector<Watermelon> *Watermelo
     }
 }
 
+//Initialize attribute set
 void InitializeAttributes(std::vector<Attribute> *attributes){
     Attribute attribute;
     
@@ -144,18 +145,16 @@ void InitializeAttributes(std::vector<Attribute> *attributes){
     attributes->push_back(attribute);
 }
 
-//测试新的西瓜是好瓜还是坏瓜
-//当前节点如果是分支节点
-//判断西瓜的属性值属于哪个分支，再次调用TestNewWatermelon
-//当前节点如果是叶子结点
-//将叶子结点的label返回
+/*测试新的西瓜是好瓜还是坏瓜*/
+//如果当前节点是叶子结点,将叶子结点的label返回
+//当前节点如果是分支节点,判断西瓜的属性值属于哪个分支，再次调用TestNewWatermelon
 bool TestNewWatermelon(Watermelon new_watermelon, TreeNode* node) {
 
     if (node->firstChild == NULL) {
         return node->label;
     }
     else {
-        int child_index = new_watermelon.attribute_values[node->attribute.index]; //本西瓜应该去第几个分支结点
+        int child_index = new_watermelon.attribute_values[node->attribute.index]; //西瓜的属性值属于第几个分支
         TreeNode *node_new = NULL;
         node_new = node->firstChild;
         if (child_index != 0) {
@@ -168,6 +167,7 @@ bool TestNewWatermelon(Watermelon new_watermelon, TreeNode* node) {
     }
 }
 
+/*根据WatermelonData训练一颗决策树，并测试一个新的西瓜样本*/
 int main(int argc, const char * argv[]) {
     //Read watermelon data
     std::vector<Watermelon> watermelons;
@@ -177,20 +177,21 @@ int main(int argc, const char * argv[]) {
     std::vector<Attribute> attributes;
     InitializeAttributes(&attributes);
     
-    //TreeGenerate
+    //Train Decision Tree
     Tree tree;
     tree.root = tree.TreeGenerate(watermelons, attributes);
     
+    //Print the trained tree
     tree.print();
     
     //Test new watermelon
     Watermelon watermelon_test;
-    watermelon_test.attribute_values.push_back(0); //
-    watermelon_test.attribute_values.push_back(0); //
-    watermelon_test.attribute_values.push_back(0); //
-    watermelon_test.attribute_values.push_back(0); //
-    watermelon_test.attribute_values.push_back(0); //
-    watermelon_test.attribute_values.push_back(0); //
+    watermelon_test.attribute_values.push_back(0); //青绿
+    watermelon_test.attribute_values.push_back(0); //蜷缩
+    watermelon_test.attribute_values.push_back(0); //浊响
+    watermelon_test.attribute_values.push_back(0); //清晰
+    watermelon_test.attribute_values.push_back(0); //凹陷
+    watermelon_test.attribute_values.push_back(0); //硬滑
     bool good_watermelon = TestNewWatermelon(watermelon_test, tree.root);
     
     if(good_watermelon)

@@ -188,12 +188,15 @@ Attribute Tree::ChoosePartitionAttribute(std::vector<Watermelon> watermelons, st
     return partition_attribute;
 }
 
-
+/*Train a decision tree
+ input: training set and attribute set
+ output: pointer to the root node of decision tree
+*/
 TreeNode* Tree::TreeGenerate(std::vector<Watermelon> watermelons, std::vector<Attribute> attributes) {
     
     TreeNode *node = new TreeNode;
     
-    //if the labels of watermelons are the same
+    //如果D中样本全属于同一类别C，then将node标记为C类叶结点，return
     bool flag = true;
     for (int i = 1; i < watermelons.size(); i++) {
         if (watermelons[i].label != watermelons[0].label) {
@@ -206,7 +209,7 @@ TreeNode* Tree::TreeGenerate(std::vector<Watermelon> watermelons, std::vector<At
         return node;
     }
     
-    //if attributes set is empty
+    //如果attribute set为空，将node标记为叶结点，其类别标记为D中样本数最多的类
     if (attributes.size() == 0) {
         int cnt = 0;
         for (int i = 0; i < watermelons.size(); i++) {
@@ -219,7 +222,7 @@ TreeNode* Tree::TreeGenerate(std::vector<Watermelon> watermelons, std::vector<At
         return node;
     }
     
-    // if watermelons have same attributes
+    //如果D中样本在A上取值相同，将node标记为叶结点，其类别标记为D中样本数最多的类
     bool flag_same_attributes = true;
     for(int j = 0; j < attributes.size(); j++) {
         for (int i = 1; i < watermelons.size(); i++) {
@@ -241,16 +244,17 @@ TreeNode* Tree::TreeGenerate(std::vector<Watermelon> watermelons, std::vector<At
         return node;
     }
     
-    // function to be filled
+    //从A中选择最优划分属性
     Attribute partition_attribute = ChoosePartitionAttribute(watermelons, attributes);
     
-    //for each possible value of parition_attribute
-    //e.g. qinglv qianbai wuhei
+    //for attribute set的每一个值a*，为node生成一个分支，令Dv表示D中在a上取值为a*的样本子集
+    //ifDv为空，将分支结点标记为叶结点，其类别标记为D中样本最多的类
+    //否则，以TreeGenerate（Dv，A\【a*】）为分支结点
+    //输出以node为根结点的一棵决策树
     node->attribute.name = partition_attribute.name;
     node->attribute.index = partition_attribute.index;
     for (int i = 0; i < partition_attribute.possible_values; i++) {
         
-        //e.g. which watermelons belong to qinglv?
         std::vector<Watermelon> watermelons_new_node;
         for (int j = 0; j < watermelons.size(); j++) {
             if (watermelons[j].attribute_values[partition_attribute.index] == i) {
@@ -258,7 +262,7 @@ TreeNode* Tree::TreeGenerate(std::vector<Watermelon> watermelons, std::vector<At
             }
         }
         
-        if (watermelons_new_node.size() == 0) { //e.g. no watermelon with qinglv color
+        if (watermelons_new_node.size() == 0) {
             TreeNode *node_new = new TreeNode;
             addNode(node, node_new);
             int cnt = 0;
